@@ -12,8 +12,11 @@
 
 // You can use unmodified imgui_impl_* files in your project. See examples/ folder for examples of using this.
 // Prefer including the entire imgui/ repository into your project (either as a copy or as a submodule), and only build the backends you need.
-// If you are new to Dear ImGui, read documentation from the docs/ folder + read the top of imgui.cpp.
-// Read online: https://github.com/ocornut/imgui/tree/master/docs
+// Learn about Dear ImGui:
+// - FAQ                  https://dearimgui.com/faq
+// - Getting Started      https://dearimgui.com/getting-started
+// - Documentation        https://dearimgui.com/docs (same as your local docs/ folder).
+// - Introduction, links and more at the top of imgui.cpp
 
 // CHANGELOG
 // (minor and older changes stripped away, please see git history for details)
@@ -47,10 +50,11 @@
 //  2018-02-06: Misc: Removed call to ImGui::Shutdown() which is not available from 1.60 WIP, user needs to call CreateContext/DestroyContext themselves.
 //  2018-02-06: Inputs: Added mapping for ImGuiKey_Space.
 
+#include "imgui.h"
+#ifndef IMGUI_DISABLE
+#include "imgui_impl_allegro5.h"
 #include <stdint.h>     // uint64_t
 #include <cstring>      // memcpy
-#include "imgui.h"
-#include "imgui_impl_allegro5.h"
 
 // Allegro
 #include <allegro5/allegro.h>
@@ -275,7 +279,7 @@ void ImGui_ImplAllegro5_InvalidateDeviceObjects()
     ImGui_ImplAllegro5_Data* bd = ImGui_ImplAllegro5_GetBackendData();
     if (bd->Texture)
     {
-        io.Fonts->SetTexID(nullptr);
+        io.Fonts->SetTexID(0);
         al_destroy_bitmap(bd->Texture);
         bd->Texture = nullptr;
     }
@@ -462,8 +466,9 @@ void ImGui_ImplAllegro5_Shutdown()
     if (bd->ClipboardTextData)
         al_free(bd->ClipboardTextData);
 
-    io.BackendPlatformUserData = nullptr;
     io.BackendPlatformName = io.BackendRendererName = nullptr;
+    io.BackendPlatformUserData = nullptr;
+    io.BackendFlags &= ~ImGuiBackendFlags_HasMouseCursors;
     IM_DELETE(bd);
 }
 
@@ -602,3 +607,7 @@ void ImGui_ImplAllegro5_NewFrame()
     // Setup mouse cursor shape
     ImGui_ImplAllegro5_UpdateMouseCursor();
 }
+
+//-----------------------------------------------------------------------------
+
+#endif // #ifndef IMGUI_DISABLE
